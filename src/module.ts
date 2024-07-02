@@ -5,8 +5,8 @@ export interface ModuleOptions {}
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'my-module',
-    configKey: 'myModule',
+    name: 'rspack',
+    configKey: 'rspack',
   },
   // Default configuration options of the Nuxt module
   defaults: {},
