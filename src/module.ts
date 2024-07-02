@@ -1,4 +1,12 @@
-import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
+import { defineNuxtModule } from '@nuxt/kit'
+import type { HookResult } from 'nuxt/schema'
+import { bundle } from './rspack'
+
+declare module '#app' {
+  interface NuxtHooks {
+    'rspack:compile': () => HookResult
+  }
+}
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -8,12 +16,11 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'rspack',
     configKey: 'rspack',
   },
-  // Default configuration options of the Nuxt module
-  defaults: {},
-  setup(_options, _nuxt) {
-    const resolver = createResolver(import.meta.url)
 
-    // Do not add the extension since the `.ts` will be transpiled to `.mjs` after `npm run prepack`
-    addPlugin(resolver.resolve('./runtime/plugin'))
+  defaults: {},
+  setup(_, nuxt) {
+    nuxt.options.builder = {
+      bundle,
+    }
   },
 })
