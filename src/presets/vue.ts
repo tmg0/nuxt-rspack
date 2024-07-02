@@ -11,7 +11,9 @@ export function vue(ctx: RspackConfigContext) {
   ctx.config.module!.rules!.push({
     test: /\.vue$/i,
     loader: 'vue-loader',
-    options: ctx.userConfig.loaders.vue,
+    options: {
+      experimentalInlineMatchResource: true,
+    },
   })
 
   if (ctx.isClient) {

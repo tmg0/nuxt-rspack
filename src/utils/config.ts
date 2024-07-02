@@ -1,7 +1,6 @@
 import type { Nuxt, NuxtOptions } from '@nuxt/schema'
-import { logger } from '@nuxt/kit'
 import type { Configuration } from '@rspack/core'
-import { klona } from 'klona'
+import { cloneDeep } from 'lodash-es'
 import { toArray } from '.'
 
 export interface RspackConfigContext {
@@ -24,6 +23,7 @@ export function createRspackConfigContext(nuxt: Nuxt): RspackConfigContext {
   return {
     nuxt,
     options: nuxt.options,
+    userConfig: {},
     config: {},
     name: 'base',
     isDev: nuxt.options.dev,
@@ -45,22 +45,8 @@ export function applyPresets(ctx: RspackConfigContext, presets: RspackConfigPres
   }
 }
 
-export function fileName(ctx: RspackConfigContext, key: string) {
-  const fileName = ctx.userConfig.filenames[key]
-
-  if (typeof fileName === 'string' && ctx.options.dev) {
-    const hash = /\[(chunkhash|contenthash|hash)(?::\d+)?\]/.exec(fileName)
-    if (hash) {
-      logger.warn(`Notice: Please do not use ${hash[1]} in dev mode to prevent memory leak`)
-    }
-    return fileName
-  }
-
-  return ''
-}
-
 export function getRspackConfig(ctx: RspackConfigContext): Configuration {
   // Clone to avoid leaking config between Client and Server
   // TODO: rewrite webpack implementation to avoid necessity for this
-  return klona(ctx.config)
+  return cloneDeep(ctx.config ?? {})
 }
