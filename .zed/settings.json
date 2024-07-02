@@ -1,0 +1,9 @@
+{
+  "formatter": {
+    "code_actions": {
+      "source.fixAll.eslint": true
+    }
+  },
+
+  "tab_size": 2
+}
