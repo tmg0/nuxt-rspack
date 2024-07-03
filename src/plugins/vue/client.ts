@@ -7,7 +7,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 
 import { normalizeWebpackManifest } from 'vue-bundle-renderer'
 import { dirname } from 'pathe'
-import hash from 'hash-sum'
+import { hash } from 'ohash'
 
 import type { Nuxt } from '@nuxt/schema'
 import type { Compilation, Compiler } from '@rspack/core'
@@ -48,7 +48,8 @@ export default class VueSSRClientPlugin {
       const assetsMapping: Record<string, string[]> = {}
 
       for (const { name: file, chunkNames = [] } of stats.assets!) {
-        if (isHotUpdate(file)) { continue }
+        if (isHotUpdate(file))
+          continue
         allFiles.add(file)
         const isFileJS = isJS(file)
         if (!initialFiles.has(file) && (isFileJS || isCSS(file))) {

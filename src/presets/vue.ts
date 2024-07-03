@@ -1,7 +1,7 @@
 import { resolve } from 'pathe'
 import { VueLoaderPlugin } from 'vue-loader'
 import rspack from '@rspack/core'
-import VueSSRClientPlugin from '../plugins/vue/client'
+import VueSSRClientPlugin from '../plugins/vue/client.js'
 import type { RspackConfigContext } from '../utils/config'
 
 export function vue(ctx: RspackConfigContext) {

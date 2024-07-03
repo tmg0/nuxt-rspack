@@ -1,7 +1,6 @@
 import type { NuxtBuilder } from 'nuxt/schema'
 import { useNitro } from '@nuxt/kit'
 import { rspack } from '@rspack/core'
-import { defu } from 'defu'
 import { resolve } from 'pathe'
 import type { InputPluginOption } from 'rollup'
 import { registerVirtualModules } from './virtual-modules'
@@ -14,7 +13,6 @@ export const bundle: NuxtBuilder['bundle'] = async (nuxt) => {
 
   const rspackConfigs = [client].map((preset) => {
     const ctx = createRspackConfigContext(nuxt)
-    ctx.userConfig = defu(nuxt.options.webpack[`$${preset.name as 'client' | 'server'}`], ctx.userConfig)
     applyPresets(ctx, preset)
     return getRspackConfig(ctx)
   })

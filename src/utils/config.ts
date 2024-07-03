@@ -6,7 +6,6 @@ import { toArray } from '.'
 export interface RspackConfigContext {
   nuxt: Nuxt
   options: NuxtOptions
-  userConfig: Omit<NuxtOptions['webpack'], '$client' | '$server'>
   config: Configuration
   name: string
   isDev: boolean
@@ -23,7 +22,6 @@ export function createRspackConfigContext(nuxt: Nuxt): RspackConfigContext {
   return {
     nuxt,
     options: nuxt.options,
-    userConfig: {},
     config: {},
     name: 'base',
     isDev: nuxt.options.dev,

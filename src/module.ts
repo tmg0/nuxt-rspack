@@ -1,12 +1,5 @@
 import { defineNuxtModule } from '@nuxt/kit'
-import type { HookResult } from 'nuxt/schema'
 import { bundle } from './rspack'
-
-declare module '#app' {
-  interface NuxtHooks {
-    'rspack:compile': () => HookResult
-  }
-}
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -19,8 +12,6 @@ export default defineNuxtModule<ModuleOptions>({
 
   defaults: {},
   setup(_, nuxt) {
-    nuxt.options.builder = {
-      bundle,
-    }
+    nuxt.options.builder = { bundle }
   },
 })
