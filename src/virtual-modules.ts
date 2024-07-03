@@ -13,7 +13,7 @@ export function registerVirtualModules() {
   }
 
   // Workaround to initialize virtual modules
-  (nuxt as any).hook('rspack:compile', ({ compiler }) => {
+  nuxt.hook('webpack:compile', ({ compiler }) => {
     if (compiler.name === 'server')
       writeFiles()
   })
@@ -21,7 +21,7 @@ export function registerVirtualModules() {
   // Update virtual modules when templates are updated
   nuxt.hook('app:templatesGenerated', writeFiles)
 
-  ; (nuxt as any).hook('rspack:config', (configs: any) => configs.forEach((config: any) => {
+  nuxt.hook('webpack:config', (configs: any[]) => configs.forEach((config) => {
     // Support virtual modules (input)
     config.plugins!.push(vmp)
   }))

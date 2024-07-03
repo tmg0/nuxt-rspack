@@ -1,5 +1,6 @@
+import fse from 'fs-extra'
 import type { NuxtBuilder } from 'nuxt/schema'
-import { useNitro } from '@nuxt/kit'
+import { useNitro, useNuxt } from '@nuxt/kit'
 import { type Compiler, rspack } from '@rspack/core'
 import { resolve } from 'pathe'
 import type { InputPluginOption } from 'rollup'
@@ -33,10 +34,10 @@ export const bundle: NuxtBuilder['bundle'] = async (nuxt) => {
   const prerenderRollupPlugins = nitro.options._config.rollupConfig!.plugins as InputPluginOption[]
   const rollupPlugins = nitro.options.rollupConfig!.plugins as InputPluginOption[]
 
+  await nuxt.callHook('webpack:config', rspackConfigs as any)
+
   prerenderRollupPlugins.push(dynamicRequirePlugin)
   rollupPlugins.push(dynamicRequirePlugin)
-
-  await (nuxt as any).callHook('rspack:config', rspackConfigs)
 
   const compilers = rspackConfigs.map((config) => {
     return rspack(config)
@@ -54,5 +55,17 @@ export const bundle: NuxtBuilder['bundle'] = async (nuxt) => {
 }
 
 async function compile(compiler: Compiler) {
+  const nuxt = useNuxt()
+  await nuxt.callHook('webpack:compile', { name: compiler.options.name!, compiler: compiler as any })
+
+  // Load renderer resources after build
+  compiler.hooks.done.tap('load-resources', async () => {
+    await nuxt.callHook('webpack:compiled', {} as any)
+  })
+
+  const path = resolve(nuxt.options.buildDir, 'dist/server/styles.mjs')
+  await fse.ensureFile(path)
+  await fse.outputFile(path, 'export default {}')
+
   await new Promise((resolve, reject) => compiler.run((err, stats) => err ? reject(err) : resolve(stats!)))
 }
