@@ -1,6 +1,6 @@
 import type { NuxtBuilder } from 'nuxt/schema'
 import { useNitro } from '@nuxt/kit'
-import { rspack } from '@rspack/core'
+import { type Compiler, rspack } from '@rspack/core'
 import { resolve } from 'pathe'
 import type { InputPluginOption } from 'rollup'
 import { registerVirtualModules } from './virtual-modules'
@@ -48,11 +48,11 @@ export const bundle: NuxtBuilder['bundle'] = async (nuxt) => {
     }
   })
 
-  await Promise.all(compilers.map((compiler) => {
-    return new Promise((resolve) => {
-      compiler.run(() => {
-        resolve(0)
-      })
-    })
-  }))
+  for (const c of compilers) {
+    await compile(c)
+  }
+}
+
+async function compile(compiler: Compiler) {
+  await new Promise((resolve, reject) => compiler.run((err, stats) => err ? reject(err) : resolve(stats!)))
 }
