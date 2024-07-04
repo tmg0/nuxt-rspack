@@ -7,6 +7,7 @@ import { toArray } from '.'
 export interface RspackConfigContext {
   nuxt: Nuxt
   options: NuxtOptions
+  userConfig: typeof DEFAULT_USER_CONFIG
   config: Configuration
   name: string
   isDev: boolean
@@ -19,10 +20,33 @@ export interface RspackConfigContext {
 type RspackConfigPreset = (ctx: RspackConfigContext, options?: object) => void
 type RspackConfigPresetItem = RspackConfigPreset | [RspackConfigPreset, any]
 
+const DEFAULT_USER_CONFIG = {
+  filenames: {
+    app: ({ isDev }: { isDev: boolean }) => isDev ? '[name].js' : '[contenthash:7].js',
+    chunk: ({ isDev }: { isDev: boolean }) => isDev ? '[name].js' : '[contenthash:7].js',
+    css: ({ isDev }: { isDev: boolean }) => isDev ? '[name].css' : 'css/[contenthash:7].css',
+    img: ({ isDev }: { isDev: boolean }) => isDev ? '[path][name].[ext]' : 'img/[name].[contenthash:7].[ext]',
+    font: ({ isDev }: { isDev: boolean }) => isDev ? '[path][name].[ext]' : 'fonts/[name].[contenthash:7].[ext]',
+    video: ({ isDev }: { isDev: boolean }) => isDev ? '[path][name].[ext]' : 'videos/[name].[contenthash:7].[ext]',
+  } as Record<string, string | ((ctx: { isDev: boolean }) => string)>,
+
+  optimization: {
+    runtimeChunk: 'single',
+    /** You can set minimizer to a customized array of plugins. */
+    minimizer: undefined,
+    splitChunks: {
+      chunks: 'all',
+      automaticNameDelimiter: '/',
+      cacheGroups: {},
+    },
+  },
+}
+
 export function createRspackConfigContext(nuxt: Nuxt): RspackConfigContext {
   return {
     nuxt,
     options: nuxt.options,
+    userConfig: DEFAULT_USER_CONFIG,
     config: {},
     name: 'base',
     isDev: nuxt.options.dev,
@@ -45,16 +69,7 @@ export function applyPresets(ctx: RspackConfigContext, presets: RspackConfigPres
 }
 
 export function fileName(ctx: RspackConfigContext, key: string) {
-  const filenames: Record<string, any> = {
-    app: ({ isDev }: RspackConfigContext) => isDev ? '[name].js' : '[contenthash:7].js',
-    chunk: ({ isDev }: RspackConfigContext) => isDev ? '[name].js' : '[contenthash:7].js',
-    css: ({ isDev }: RspackConfigContext) => isDev ? '[name].css' : 'css/[contenthash:7].css',
-    font: ({ isDev }: RspackConfigContext) => isDev ? '[path][name].js' : 'fonts/[name].[contenthash:7].[ext]',
-    img: ({ isDev }: RspackConfigContext) => isDev ? '[name].js' : 'img/[name].[contenthash:7].[ext]',
-    video: ({ isDev }: RspackConfigContext) => isDev ? '[name].js' : 'videos/[name].[contenthash:7].[ext]',
-  }
-
-  let fileName = filenames[key]
+  let fileName = ctx.userConfig.filenames[key]
 
   if (typeof fileName === 'function') {
     fileName = fileName(ctx)

@@ -36,7 +36,7 @@ function baseConfig(ctx: RspackConfigContext) {
     name: ctx.name,
     entry: { app: [resolve(ctx.options.appDir, ctx.options.experimental.asyncEntry ? 'entry.async' : 'entry')] },
     experiments: { css: true },
-    optimization: { minimizer: [] },
+    optimization: { ...ctx.userConfig.optimization as any, minimize: !ctx.isDev, minimizer: [] },
     module: { rules: [] },
     plugins: [],
     externals: [],

@@ -1,8 +1,9 @@
+<script setup lang="ts">
+const msg = ref<string>('Rspack')
+</script>
+
 <template>
   <div>
-    Nuxt module playground!
+    Hello {{ msg }}!
   </div>
 </template>
-
-<script setup>
-</script>
