@@ -8,6 +8,7 @@ export function base(ctx: RspackConfigContext) {
   applyPresets(ctx, [
     baseAlias,
     baseConfig,
+    baseResolve,
   ])
 }
 
@@ -45,6 +46,25 @@ function baseConfig(ctx: RspackConfigContext) {
     output: getOutput(ctx),
     stats: statsMap[ctx.nuxt.options.logLevel] ?? statsMap.info,
     ...ctx.config,
+  }
+}
+
+function baseResolve(ctx: RspackConfigContext) {
+  // Prioritize nested node_modules in webpack search path (#2558)
+  // TODO: this might be refactored as default modulesDir?
+  const modules = ['node_modules'].concat(ctx.options.modulesDir)
+
+  ctx.config.resolve = {
+    extensions: ['.wasm', '.mjs', '.js', '.ts', '.json', '.vue', '.jsx', '.tsx'],
+    alias: ctx.alias,
+    modules,
+    fullySpecified: false,
+    ...ctx.config.resolve,
+  }
+
+  ctx.config.resolveLoader = {
+    modules,
+    ...ctx.config.resolveLoader,
   }
 }
 
