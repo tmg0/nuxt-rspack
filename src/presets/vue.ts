@@ -1,19 +1,12 @@
 import { resolve } from 'pathe'
-import { VueLoaderPlugin } from 'vue-loader'
 import rspack from '@rspack/core'
 import VueSSRClientPlugin from '../plugins/vue/client.js'
 import type { RspackConfigContext } from '../utils/config'
 
 export function vue(ctx: RspackConfigContext) {
-  // @ts-expect-error de-default vue-loader
-  ctx.config.plugins!.push(new (VueLoaderPlugin.default || VueLoaderPlugin)())
-
   ctx.config.module!.rules!.push({
     test: /\.vue$/i,
-    loader: 'vue-loader',
-    options: {
-      experimentalInlineMatchResource: true,
-    },
+    use: ['/Users/zekun.jin/Developer/Repositories/Tamago/nuxt-rspack/src/loaders/vue.cjs'],
   })
 
   if (ctx.isClient) {
